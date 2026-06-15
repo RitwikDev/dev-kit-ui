@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct StepItemModifier: ViewModifier {
-    let id: Int
+    let index: Int
     let title: String
     
-    @Environment(\.currentStepId) private var currentStepId
+    @Environment(\.currentStepIndex) private var currentStepIndex
     
     func body(content: Content) -> some View {
         ZStack {
-            if currentStepId == id {
+            if currentStepIndex == index {
                 content
             }
         }
@@ -23,14 +23,14 @@ struct StepItemModifier: ViewModifier {
             Color.clear
                 .preference(
                     key: StepperPreferenceKey.self,
-                    value: [StepperStep(id: id, title: title)]
+                    value: [StepperStep(id: index, title: title)]
                 )
         )
     }
 }
 
 public extension View {
-    func stepItem(id: Int, title: String) -> some View {
-        self.modifier(StepItemModifier(id: id, title: title))
+    func stepItem(index: Int, title: String) -> some View {
+        self.modifier(StepItemModifier(index: index, title: title))
     }
 }
