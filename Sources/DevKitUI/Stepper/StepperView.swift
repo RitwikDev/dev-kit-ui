@@ -8,20 +8,21 @@
 import SwiftUI
 
 public struct StepperView<Content: View>: View {
-    @Binding public var currentStepId: Int
+    @Binding public var currentStepIndex: Int
     public var onNavigate: (_ from: Int) -> Bool
     public var onComplete: () -> Void
     public var content: Content
     
     @State private var steps: [StepperStep] = []
+    @State private var isMovingForward: Bool = true
     
     public init(
-        currentStepId: Binding<Int>,
+        currentStepIndex: Binding<Int>,
         onNavigate: @escaping (_ from: Int) -> Bool = { _ in true },
         onComplete: @escaping () -> Void,
         @ViewBuilder content: () -> Content
     ) {
-        self._currentStepId = currentStepId
+        self._currentStepIndex = currentStepIndex
         self.onNavigate = onNavigate
         self.onComplete = onComplete
         self.content = content()
@@ -30,17 +31,17 @@ public struct StepperView<Content: View>: View {
     public var body: some View {
         VStack {
             StepperHeaderView(
-                currentStepId: $currentStepId,
+                currentStepIndex: $currentStepIndex,
                 steps: steps,
                 onNavigate: onNavigate
             )
             
             ZStack {
                 content
-                    .transition(.slide)
             }
             .frame(maxHeight: .infinity, alignment: .top)
-            .environment(\.currentStepId, currentStepId)
+            .animation(.spring(response: 0.4, dampingFraction: 0.9), value: currentStepIndex)
+            .environment(\.currentStepIndex, currentStepIndex)
             .onPreferenceChange(StepperPreferenceKey.self) { extractedSteps in
                 if self.steps != extractedSteps {
                     self.steps = extractedSteps
@@ -48,7 +49,7 @@ public struct StepperView<Content: View>: View {
             }
             .safeAreaInset(edge: .bottom) {
                  StepperFooterView(
-                    currentStepId: $currentStepId,
+                    currentStepIndex: $currentStepIndex,
                     steps: steps,
                     onNavigate: onNavigate,
                     onComplete: onComplete
@@ -59,16 +60,25 @@ public struct StepperView<Content: View>: View {
 }
 
 #Preview {
-    @Previewable @State var currentStepId: Int = 1
+    @Previewable @State var currentStepIndex: Int = 1
     
     StepperView(
-        currentStepId: $currentStepId,
+        currentStepIndex: $currentStepIndex,
         onComplete: { print("Completed") }
     ) {
-        Text("I am great")
-            .stepItem(id: 1, title: "Who am I?")
+        Form {
+            Text("I am great")
+        }
+        .stepItem(index: 1, title: "Who am I?")
         
-        Text("Yes")
-            .stepItem(id: 2, title: "Why?")
+        ZStack {
+            Text("Yes")
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.cyan)
+        .stepItem(index: 2, title: "Why?")
+        
+        Text("No")
+            .stepItem(index: 3, title: "True")
     }
 }

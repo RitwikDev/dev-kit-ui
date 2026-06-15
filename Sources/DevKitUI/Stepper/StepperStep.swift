@@ -25,13 +25,13 @@ struct StepperPreferenceKey: PreferenceKey {
     }
 }
 
-struct CurrentStepIdKey: EnvironmentKey {
+struct CurrentStepIndexKey: EnvironmentKey {
     static let defaultValue: Int = -1
 }
 
 extension EnvironmentValues {
-    var currentStepId: Int {
-        get { self[CurrentStepIdKey.self] }
-        set { self[CurrentStepIdKey.self] = newValue }
+    var currentStepIndex: Int {
+        get { self[CurrentStepIndexKey.self] }
+        set { self[CurrentStepIndexKey.self] = newValue }
     }
 }

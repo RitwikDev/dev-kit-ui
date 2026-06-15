@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct StepperHeaderView: View {
-    @Binding var currentStepId: Int
+    @Binding var currentStepIndex: Int
     var steps: [StepperStep]
     var onNavigate: (_ from: Int) -> Bool = { _  in true}
     
     private var currentStep: StepperStep? {
-        steps.first { $0.id == currentStepId }
+        steps.first { $0.id == currentStepIndex }
     }
     
     var body: some View {
@@ -21,7 +21,7 @@ struct StepperHeaderView: View {
             GeometryReader { geometry in
                 HStack(spacing: 4) {
                     ForEach(steps) { step in
-                        let isCurrent = step.id == currentStepId
+                        let isCurrent = step.id == currentStepIndex
                         
                         HeaderView(
                             step: step,
@@ -32,11 +32,11 @@ struct StepperHeaderView: View {
                         .frame(maxWidth: .infinity)
                         .animation(.spring(duration: 0.25), value: isCurrent)
                         .onTapGesture {
-                            let shouldNavigate = step.id != currentStepId
-                            && onNavigate(currentStepId)
+                            let shouldNavigate = step.id != currentStepIndex
+                            && onNavigate(currentStepIndex)
                             
                             if shouldNavigate {
-                                currentStepId = step.id
+                                currentStepIndex = step.id
                             }
                         }
                     }
@@ -75,7 +75,7 @@ struct HeaderView: View {
 
 #Preview {
     StepperHeaderView(
-        currentStepId: .constant(1),
+        currentStepIndex: .constant(1),
         steps: [
             .init(id: 1, title: "Step 1"),
             .init(id: 2, title: "Step 2"),
